@@ -92,8 +92,18 @@ public class NumberTriangle {
      *
      */
     public int retrieve(String path) {
-        // TODO implement this method
+        if (!path.isEmpty()) {
+            switch (path.charAt(0)) {
+                case 'l':
+                    return this.left.retrieve(path.substring(1, path.length()));
 
+                case 'r':
+                    return this.right.retrieve(path.substring(1, path.length()));
+            }
+        }
+        else{
+            return this.getRoot();
+        }
         return -1;
     }
 
@@ -145,11 +155,8 @@ public class NumberTriangle {
         InputStream inputStream = NumberTriangle.class.getClassLoader().getResourceAsStream(fname);
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
-
-        // TODO define any variables that you want to use to store things
         ArrayList<String[]> rows = new ArrayList<>();// Stores each line's numbers
-        int total_numbers = 0;// Count for the total number of the numbers in the .txt file
-        String[] allNumbers = new String[total_numbers];// Stores all the numbers in a String[]
+        int totalNumbers = 0;// Count for the total number of the numbers in the .txt file
         int allNumbers_index = 0;// Index of allNumbers
 
         // will need to return the top of the NumberTriangle,
@@ -163,15 +170,15 @@ public class NumberTriangle {
             // remove when done; this line is included so running starter code prints the contents of the file
             System.out.println(line);
 
-            // TODO process the line
             String[] content = line.split(" ");
             rows.add(content);
-            total_numbers += content.length;
+            totalNumbers += content.length;
 
             //read the next line
             line = br.readLine();
         }
 
+        String[] allNumbers = new String[totalNumbers];// Stores all the numbers in a String[]
         for  (String[] row : rows) {
             for (String number : row) {
                 allNumbers[allNumbers_index] = number;
@@ -179,7 +186,7 @@ public class NumberTriangle {
             }
         }
         // Initiating the recursive process of constructing the NumberTriangle from the top
-        top = _loadTriangleHelper(new NumberTriangle[]{new NumberTriangle(Integer.parseInt(allNumbers[0]))}, Arrays.copyOfRange(allNumbers, 1, total_numbers))[0];
+        top = _loadTriangleHelper(new NumberTriangle[]{new NumberTriangle(Integer.parseInt(allNumbers[0]))}, Arrays.copyOfRange(allNumbers, 1, totalNumbers))[0];
 
         br.close();
         return top;
