@@ -1,4 +1,8 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * This is the provided NumberTriangle class to be used in this coding task.
@@ -89,7 +93,39 @@ public class NumberTriangle {
      */
     public int retrieve(String path) {
         // TODO implement this method
+
         return -1;
+    }
+
+    // A helper method for loadTriangle method that recursively create NumberTriangles and assign the corresponding left and right.
+    private static NumberTriangle[] _loadTriangleHelper(NumberTriangle[] triangleTops, String[] numbers) {
+
+        if (numbers.length != 0) {
+
+            // nextRow contains the child numbers of the NumberTriangles in triangleTops
+            String[] nextRow = Arrays.copyOfRange(numbers, 0, triangleTops.length + 1);
+
+            // otherRows contain rest of the numbers
+            String[] otherRows = Arrays.copyOfRange(numbers, triangleTops.length + 1, numbers.length);
+            NumberTriangle[] newTriangles = new NumberTriangle[nextRow.length];
+
+            // Create NumberTriangles for the numbers on the next row
+            for (int a = 0; a < nextRow.length; a++) {
+                newTriangles[a] = new NumberTriangle(Integer.parseInt(nextRow[a]));
+            }
+
+            // Assign left and right to the newTriangles recursively
+            newTriangles = _loadTriangleHelper(newTriangles, otherRows);
+
+            // Assign left and right for each of the triangleTop
+            for (int i = 0; i < triangleTops.length; i++) {
+                triangleTops[i].setLeft(newTriangles[i]);
+                triangleTops[i].setRight(newTriangles[i + 1]);
+            }
+
+
+        }
+        return triangleTops;
     }
 
     /** Read in the NumberTriangle structure from a file.
@@ -111,22 +147,40 @@ public class NumberTriangle {
 
 
         // TODO define any variables that you want to use to store things
+        ArrayList<String[]> rows = new ArrayList<>();// Stores each line's numbers
+        int total_numbers = 0;// Count for the total number of the numbers in the .txt file
+        String[] allNumbers = new String[total_numbers];// Stores all the numbers in a String[]
+        int allNumbers_index = 0;// Index of allNumbers
 
         // will need to return the top of the NumberTriangle,
         // so might want a variable for that.
         NumberTriangle top = null;
 
         String line = br.readLine();
+
         while (line != null) {
 
             // remove when done; this line is included so running starter code prints the contents of the file
             System.out.println(line);
 
             // TODO process the line
+            String[] content = line.split(" ");
+            rows.add(content);
+            total_numbers += content.length;
 
             //read the next line
             line = br.readLine();
         }
+
+        for  (String[] row : rows) {
+            for (String number : row) {
+                allNumbers[allNumbers_index] = number;
+                allNumbers_index++;
+            }
+        }
+        // Initiating the recursive process of constructing the NumberTriangle from the top
+        top = _loadTriangleHelper(new NumberTriangle[]{new NumberTriangle(Integer.parseInt(allNumbers[0]))}, Arrays.copyOfRange(allNumbers, 1, total_numbers))[0];
+
         br.close();
         return top;
     }
